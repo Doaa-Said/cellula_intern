@@ -2,51 +2,54 @@ import streamlit as st
 import infer
 import imagecaption, db
 from PIL import Image
+import pandas as pd
+import io
 
-st.title("Toxicity classification")
+st.title("Toxicity Classification")
 db.init_db()
+
 menu = st.sidebar.radio(
     "Choose Task",
     [
-        "Text Classification",
-        "Image Text Classification",
+        "Classification",
         "Show Database"
     ]
 )
 
-if menu == "Text Classification":
-    query = st.text_area("Enter query text:")
-    img_desc = st.text_area("Enter image description:")
-    if st.button("Classify"):
-        label = infer.classify(query, img_desc)
-        st.success(f"Prediction: {label}")
-        db.insert_record(query, label)
+# --- CLASSIFICATION 
+if menu == "Classification":
+    query = st.text_area("Enter query text (optional):")
+    uploaded_file = st.file_uploader("Upload an image (optional)", type=["jpg", "png", "jpeg"])
 
-
-
-elif menu == "Image Text Classification":
-    uploaded_file = st.file_uploader("Upload an image", type=["jpg", "png"])
+    img_desc = ""
     if uploaded_file:
+        # Reset pointer and open with PIL
+        uploaded_file.seek(0)
         image = Image.open(uploaded_file)
         st.image(image, caption="Uploaded Image", use_column_width=True)
 
-        if st.button("Classify Image"):
-            # Use BLIP captioning only
-            img_desc = imagecaption.generate_caption(uploaded_file)
+        #  Reset pointer again before passing to BLIP
+        uploaded_file.seek(0)
+        img_desc = imagecaption.generate_caption(uploaded_file)
+        st.info(f"BLIP Caption: {img_desc}")
 
-            # Classify based on BLIP caption
-            label = infer.classify(img_desc)
+    if st.button("Classify"):
+        label = infer.classify(query, img_desc)
+        st.success(f"Prediction: {label}")
 
-            st.success(f"Prediction: {label} (BLIP Caption Only)")
+        # Save to DB (store text, caption, or both)
+        combined_input = query if query else ""
+        if img_desc:
+            combined_input = (combined_input + " | " if combined_input else "") + img_desc
+        db.insert_record(combined_input, label)
 
-            # Save to DB
-            db.insert_record(img_desc, label)
+# --- DATABASE VIEW ---
 elif menu == "Show Database":
     st.subheader("📊 Stored Classification Results")
     records = db.fetch_all()
     if records:
-        import pandas as pd
-        df = pd.DataFrame(records, columns=["ID", "Query",  "Label", "Timestamp"])
+        df = pd.DataFrame(records, columns=["ID", "Query", "Label", "Timestamp"])
         st.dataframe(df)
     else:
         st.info("No records found in the database.")
+
