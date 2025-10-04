@@ -32,7 +32,7 @@ collection.add(
 print("✅ Dataset indexed in ChromaDB!")
 
 
-model_name = "microsoft/phi-2"
+model_name = "Salesforce/codegen-350M-mono"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForCausalLM.from_pretrained(model_name, device_map="auto")
 
@@ -71,4 +71,5 @@ Only provide the Python function code. Do NOT include any examples, docstrings, 
 output = generator(prompt, max_new_tokens=200, temperature=0.3, do_sample=True)
 
 print("\n💡 Generated Code:\n")
+
 print(output[0]["generated_text"])
