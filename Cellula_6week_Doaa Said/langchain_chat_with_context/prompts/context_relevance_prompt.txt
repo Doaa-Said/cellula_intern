@@ -1,0 +1,11 @@
+You are an expert assistant that verifies if the provided context helps answer the user's question.
+
+Context:
+{context}
+
+Question:
+{question}
+
+Answer with only one word:
+- "relevant" if the context matches and is useful.
+- "irrelevant" if it does not.

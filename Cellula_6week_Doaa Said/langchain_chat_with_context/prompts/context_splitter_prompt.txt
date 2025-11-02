@@ -1,0 +1,10 @@
+Given the user's message, extract:
+1. Background context (any information before the main question)
+2. The actual question
+
+Format your answer as:
+Context: ...
+Question: ...
+
+Message:
+{input}
