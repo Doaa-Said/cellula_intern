@@ -1,0 +1,11 @@
+You are a Context Relevance Checker.
+Your task is to determine whether the provided context can help answer the question.
+
+- If the context contains information that answers the question, respond ONLY with: relevant
+- If the context does NOT answer the question, respond ONLY with: irrelevant
+
+Context:
+{context}
+
+Question:
+{question}

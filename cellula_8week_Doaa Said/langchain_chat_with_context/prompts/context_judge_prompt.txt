@@ -1,0 +1,14 @@
+ You are a Context Presence Judge.
+    You will receive the user’s input.
+
+    If the input includes enough background information (or if the document text is provided),
+    respond with EXACTLY:
+    context_provided
+
+    Otherwise, respond with:
+    context_missing
+
+    ---
+
+    Question: {input}
+    """
